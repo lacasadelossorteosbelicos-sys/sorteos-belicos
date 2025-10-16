@@ -2,50 +2,577 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sorteos Bélicos</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sorteos Bélicos — Vista previa</title>
+  <meta name="description" content="Sorteos Bélicos — Compra folios, verifica y participa en sorteos basados en Lotería Nacional." />
+  <meta name="theme-color" content="#0b1220">
+
+  <!-- Simple styles (inline para que lo puedas pegar rápido) -->
   <style>
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0f172a; color:#e2e8f0; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
-    header h1 { margin: 0 0 16px; font-size: 28px; }
-    .hero { border-radius: 12px; overflow: hidden; border: 1px solid #1f2937; background:#0b1220; }
-    .hero img { width: 100%; height: auto; display: block; }
-    h2 { margin: 28px 0 12px; font-size: 22px; }
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); }
-    .card { background:#0b1220; border:1px solid #1f2937; border-radius:12px; padding:12px; }
-    .card img { width:100%; height:auto; border-radius:8px; display:block; }
-    .muted { color:#94a3b8; font-size:14px; }
-    a.btn { display:inline-block; margin-top:10px; padding:10px 14px; border-radius:10px; background:#2563eb; color:#fff; text-decoration:none; }
+    :root{
+      --bg:#0b1220; --panel:#0f172a; --muted:#94a3b8; --text:#e6eef8;
+      --accent:#111827; --primary:#60a5fa; --border:#1f2a41; --radius:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);background:var(--bg)}
+    img{max-width:100%;height:auto;display:block}
+    a{color:inherit}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header.site-top{position:sticky;top:0;z-index:40;background:rgba(11,17,32,0.72);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .top-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px}
+    .brand{font-weight:700}
+    nav a{margin-left:16px;text-decoration:none;color:var(--muted);font-size:14px}
+    nav a:hover{color:var(--text)}
+    .wa-btn{background:#25D366;color:#05260b;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+
+    /* HERO */
+    .hero{padding:44px 0;border-bottom:1px solid var(--border)}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+    .hero h1{margin:0 0 12px;font-size:clamp(28px,4vw,40px)}
+    .hero p{margin:0 0 18px;color:var(--muted);line-height:1.6}
+    .cta{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;text-decoration:none;background:var(--accent);color:var(--text);border:1px solid rgba(255,255,255,0.03)}
+    .btn.primary{background:var(--primary);color:#041427;border:0}
+    .hero-media{justify-self:end;max-width:460px}
+
+    /* SECCIONES */
+    section{padding:36px 0}
+    .section-title{font-size:20px;margin:0 0 12px}
+    .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+
+    /* CARD */
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(2,6,23,0.35)}
+    .card .body{padding:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .price{font-weight:700}
+
+    /* FOLIO SEARCH */
+    .panel{background:var(--panel);padding:14px;border-radius:12px;border:1px solid var(--border)}
+    .input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+    .row{display:flex;gap:10px;align-items:center}
+    .chip{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
+
+    /* MODALS */
+    .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:60}
+    .modal-panel{width:95%;max-width:920px;background:#fff;color:#0b1220;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(2,6,23,0.6);max-height:92vh;display:flex;flex-direction:column}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid #eee}
+    .modal-body{padding:14px;overflow:auto}
+
+    /* LEGAL */
+    .legal{font-size:13px;color:#374151;padding:14px}
+
+    /* TOAST */
+    .toast-wrap{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;z-index:80;pointer-events:none}
+    .toast{pointer-events:auto;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 20px rgba(2,6,23,0.6);}
+
+    /* FOOTER */
+    footer.site-footer{border-top:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:18px 0;text-align:center}
+
+    /* responsive */
+    @media (max-width:900px){
+      .hero-grid{grid-template-columns:1fr}
+      .hero-media{justify-self:start;max-width:100%}
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Sorteos Bélicos</h1>
-      <p class="muted">Plataforma de rifas transparente y directa. ¡El que no arriesga, no gana!</p>
-    </header>
+  <!-- NAV -->
+  <header class="site-top">
+    <div class="container top-inner">
+      <div class="brand">Sorteos Bélicos</div>
+      <nav>
+        <a href="#sorteos">Sorteos</a>
+        <a href="#folios">Folios</a>
+        <a href="#faq">FAQ</a>
+        <a class="wa-btn" href="https://wa.me/528999123686?text=Hola,%20quiero%20participar%20en%20los%20sorteos." target="_blank" rel="noopener">WhatsApp</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- HERO -->
+  <!-- HERO -->
+  <main>
     <section class="hero">
-      <!-- tus imágenes están en /belicos/ -->
-      <img src="/belicos/hero.png?v=2" alt="Hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>La Casa de los Sorteos Bélicos</h1>
+          <p>Plataforma de sorteos con <strong>dinámicas transparentes</strong>. Compra tu folio, recibe comprobante y mira el sorteo en vivo. En Sorteos Bélicos: <strong>el que no arriesga, no gana.</strong></p>
+          <div class="cta">
+            <a class="btn primary" href="#sorteos">Ver sorteos</a>
+            <a class="btn" href="#como-funciona">Cómo funciona</a>
+          </div>
+        </div>
+
+        <div class="hero-media">
+          <!-- hero optimizado: decoding async, width/height para evitar CLS -->
+          <img src="/belicos/hero.png?v=3" alt="Sorteos Bélicos" width="1000" height="700" decoding="async" fetchpriority="high" style="border-radius:14px;border:1px solid var(--border);object-fit:cover;">
+        </div>
+      </div>
     </section>
 
-    <!-- SORTEOS ACTIVOS -->
-    <h2>Sorteos activos</h2>
-    <div class="grid">
-      <article class="card">
-        <img src="/belicos/ps5-card.png?v=2" alt="PlayStation 5 Slim">
-        <div class="muted">PS5 Slim • 10,000 folios</div>
-        <a class="btn" href="#">Comprar boleto</a>
-      </article>
+    <!-- SORTEOS -->
+    <section id="sorteos" class="container">
+      <h2 class="section-title">Sorteos activos</h2>
+      <div class="grid">
+        <!-- PS5 Card -->
+        <article class="card">
+          <img src="/belicos/ps5-card.png?v=2" alt="PlayStation 5 — Edición Slim" loading="lazy" width="1200" height="800">
+          <div class="body" style="padding:12px;">
+            <h3 style="margin:6px 0 8px">PlayStation 5 — Edición Slim</h3>
+            <div class="muted">Precio por boleto: <span class="price">200 MXN</span> • 10,000 folios</div>
+            <div style="margin-top:12px;display:flex;gap:10px;">
+              <button class="btn" onclick="openRaffle({title:'PlayStation 5 — Edición Slim', img:'/belicos/ps5-modal.png?v=2', price:200, total:10000, digits:5})">Ver detalles</button>
+              <a class="btn primary" href="https://wa.me/528999123686?text=Hola,%20quiero%20participar%20en%20el%20sorteo%20PS5" target="_blank" rel="noopener">Comprar boleto</a>
+            </div>
+          </div>
+        </article>
 
-      <article class="card">
-        <img src="/belicos/ps5-modal.png?v=2" alt="Detalles PS5">
-        <div class="muted">Consulta folios y resultados</div>
-        <a class="btn" href="#">Ver detalles</a>
-      </article>
+        <!-- Ejemplo adicional (puedes duplicar/editar) -->
+        <article class="card">
+          <img src="/belicos/ps5-modal.png?v=2" alt="Consulta folios" loading="lazy" width="1200" height="800">
+          <div class="body" style="padding:12px;">
+            <h3 style="margin:6px 0 8px">Consulta de folios</h3>
+            <div class="muted">Verifica folios y resultados en tiempo real (demo/local).</div>
+            <div style="margin-top:12px;">
+              <a class="btn" href="#folios">Buscar folios</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FOLIOS SEARCH -->
+    <section id="folios" class="container" style="margin-top:26px">
+      <h2 class="section-title">Buscador de folios</h2>
+      <p class="muted" style="margin:6px 0 12px">Ingresa tu teléfono para consultar los folios comprados (modo demo: usa localStorage).</p>
+
+      <div class="panel" id="folios-panel" style="max-width:720px">
+        <form id="folios-form">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input id="phone-input" type="tel" class="input" placeholder="Teléfono (10 dígitos)" style="flex:1" />
+            <button class="btn primary" style="white-space:nowrap" type="submit">Buscar</button>
+          </div>
+
+          <!-- demo controls -->
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button type="button" class="btn" onclick="seedDemo()">Cargar datos demo</button>
+            <span class="muted" style="font-size:13px">o agrega folio de prueba abajo</span>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input id="new-folio" placeholder="Folio (ej. 04567)" class="input" style="flex:1;max-width:180px" />
+            <select id="new-sorteo" class="input" style="max-width:240px">
+              <option>PlayStation 5 — Edición Slim</option>
+              <option>Otro sorteo</option>
+            </select>
+            <button type="button" class="btn" onclick="addDemoFolio()">Agregar folio</button>
+          </div>
+        </form>
+
+        <div id="folios-result" style="margin-top:14px"></div>
+        <p class="muted" style="margin-top:10px">Nota: buscador en modo demo (localStorage). Para producción, conecta tu API.</p>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section id="como-funciona" class="container">
+      <h2 class="section-title">Cómo funciona</h2>
+      <ol style="color:var(--muted);margin:6px 0 0 18px">
+        <li>Elige tu sorteo y compra tus folios.</li>
+        <li>Recibe tu folio y confirma tu número.</li>
+        <li>Mira la transmisión y verifica al ganador.</li>
+      </ol>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="container">
+      <h2 class="section-title">Preguntas frecuentes</h2>
+      <details style="background:var(--panel);padding:12px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px">
+        <summary style="font-weight:600;cursor:pointer">¿Cómo compro un boleto?</summary>
+        <p style="color:var(--muted);margin-top:8px">Elige tu sorteo, selecciona número y confirma por WhatsApp.</p>
+      </details>
+      <details style="background:var(--panel);padding:12px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px">
+        <summary style="font-weight:600;cursor:pointer">¿Cómo se realiza el sorteo?</summary>
+        <p style="color:var(--muted);margin-top:8px">Basado en la Lotería Nacional y transmitido en vivo.</p>
+      </details>
+      <details style="background:var(--panel);padding:12px;border-radius:10px;border:1px solid var(--border)">
+        <summary style="font-weight:600;cursor:pointer">¿Qué pasa si gano?</summary>
+        <p style="color:var(--muted);margin-top:8px">Te contactamos y coordinamos entrega oficial.</p>
+      </details>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="container" style="margin-bottom:22px">
+      <div style="display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <h3 style="margin:0 0 6px">¿Listo para participar?</h3>
+          <p class="muted" style="margin:0">Escríbenos por WhatsApp y te asistimos con folios y pagos.</p>
+        </div>
+        <a class="wa-btn" href="https://wa.me/528999123686?text=Hola,%20quiero%20participar%20en%20los%20sorteos." target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong>Sorteos Bélicos</strong><br>
+          <small class="muted">Operación segura y transparente • Reynosa, Tamaulipas</small>
+        </div>
+        <div>
+          <button class="btn" onclick="openPrivacy()">Aviso de Privacidad</button>
+          <button class="btn" onclick="openTerms()">Términos y Condiciones</button>
+        </div>
+      </div>
     </div>
-  </div>
+    <div style="margin-top:12px;text-align:center;color:var(--muted);font-size:13px">© <span id="year"></span> Sorteos Bélicos</div>
+  </footer>
+
+  <!-- TOAST -->
+  <div id="toast-wrap" class="toast-wrap" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- MODAL DE SORTEO (insertado dinámicamente) -->
+  <div id="raffle-modal-root"></div>
+
+  <!-- MODALES LEGALES -->
+  <div id="legal-root"></div>
+
+  <!-- SCRIPTS: lógica local (tómbola, folios demo, modales) -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ================= utilities ================= */
+    function pickRandomUnique(total, selectedArray, count) {
+      const already = new Set(selectedArray || []);
+      const result = new Set();
+      const need = Math.max(0, Math.min(count, Math.max(0, total - already.size)));
+      if (need === 0) return [];
+      let guard = 0;
+      const GUARD_LIMIT = need * 200 + 1000;
+      while (result.size < need && guard < GUARD_LIMIT) {
+        const num = Math.floor(Math.random() * total);
+        if (!already.has(num)) result.add(num);
+        guard++;
+      }
+      return Array.from(result);
+    }
+
+    /* ================= Toast ================= */
+    const toastWrap = document.getElementById('toast-wrap');
+    let toastTimeout = null;
+    function showToast(msg) {
+      toastWrap.innerHTML = '';
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = String(msg);
+      toastWrap.appendChild(el);
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(()=> { toastWrap.innerHTML = ''; }, 3200);
+    }
+
+    /* ================= Raffle modal (plain JS) ================= */
+    let currentRaffle = null;
+    function openRaffle(data) {
+      currentRaffle = Object.assign({}, data);
+      renderRaffleModal();
+    }
+    function closeRaffle() {
+      currentRaffle = null;
+      document.getElementById('raffle-modal-root').innerHTML = '';
+    }
+
+    function renderRaffleModal() {
+      if (!currentRaffle) return;
+      const root = document.getElementById('raffle-modal-root');
+      root.innerHTML = `
+        <div class="modal-back" role="dialog" aria-modal="true">
+          <div class="modal-panel" role="document">
+            <div class="modal-header">
+              <strong>${escapeHtml(currentRaffle.title)}</strong>
+              <button onclick="closeRaffle()" class="btn">Cerrar</button>
+            </div>
+            <div class="modal-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
+                  <img src="${escapeAttr(currentRaffle.img)}" alt="${escapeAttr(currentRaffle.title)}" style="width:100%;border-radius:8px" onerror="this.src='/belicos/ps5-card.png'">
+                </div>
+                <div>
+                  <p class="muted">Precio por boleto: <strong>${Number(currentRaffle.price)} MXN</strong></p>
+                  <p class="muted">Folios disponibles: <strong>${Number(currentRaffle.total || 0).toLocaleString()}</strong></p>
+                  <div style="margin-top:10px">
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                      <button class="btn" onclick="tombolaAdd(1)">Tómbola +1</button>
+                      <button class="btn" onclick="tombolaAdd(10)">+10</button>
+                      <button class="btn" onclick="tombolaAdd(50)">+50</button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                      <input id="manual-folio" placeholder="Elegir folio (ej. 00012)" style="padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:140px">
+                      <button class="btn" onclick="addManual()">Agregar</button>
+                    </div>
+                    <div style="margin-top:8px">
+                      <label class="muted">Teléfono</label>
+                      <input id="buyer-phone" placeholder="5512345678" style="padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;margin-top:6px">
+                      <label class="muted" style="margin-top:8px;display:block">Nombre (opcional)</label>
+                      <input id="buyer-name" placeholder="Nombre" style="padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;margin-top:6px">
+                    </div>
+                    <div style="margin-top:12px;display:flex;gap:8px">
+                      <button class="btn primary" onclick="sendWhatsApp()">Enviar a WhatsApp</button>
+                      <button class="btn" onclick="registerDemo()">Registrar (demo)</button>
+                      <button class="btn" onclick="clearSelected()">Limpiar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:12px">
+                <strong>Seleccionados:</strong>
+                <div id="selected-list" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
+                <div id="selected-info" style="margin-top:8px;color:var(--muted)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      // state for modal
+      modalState.selected = modalState.selected || [];
+      modalState.manual = '';
+      modalState.spinning = false;
+      updateModalUI();
+    }
+
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])) }
+    function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;') }
+
+    const modalState = { selected: [], manual: '', spinning:false };
+
+    function tombolaAdd(count){
+      if (!currentRaffle) return;
+      const total = Number(currentRaffle.total || 0);
+      const added = pickRandomUnique(total, modalState.selected, count);
+      modalState.selected = [...modalState.selected, ...added].sort((a,b)=>a-b);
+      showToast(`Agregados ${added.length} folio(s): ${added.slice(0,10).map(n=>pad(n,currentRaffle.digits||3)).join(', ')}${added.length>10?'…':''}`);
+      updateModalUI();
+    }
+
+    function pad(n,d){ return String(n).padStart(Number(d||3),'0') }
+
+    function addManual(){
+      const v = document.getElementById('manual-folio').value.trim();
+      if (!v) return showToast('Escribe un folio');
+      const n = Number(v.replace(/\D/g,''));
+      if (!Number.isFinite(n) || n<0 || n>= (currentRaffle.total||0)) return showToast('Folio fuera de rango');
+      if (modalState.selected.includes(n)) return showToast('Folio ya seleccionado');
+      modalState.selected.push(n); modalState.selected.sort((a,b)=>a-b);
+      document.getElementById('manual-folio').value='';
+      updateModalUI();
+      showToast(`Agregado ${pad(n,currentRaffle.digits||3)}`);
+    }
+
+    function updateModalUI(){
+      const wrap = document.getElementById('selected-list');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      modalState.selected.forEach(n=>{
+        const span = document.createElement('span');
+        span.style.display='inline-flex';
+        span.style.alignItems='center';
+        span.style.gap='8px';
+        span.style.padding='6px 8px';
+        span.style.borderRadius='10px';
+        span.style.background='#f3f4f6';
+        span.style.color='#0b1220';
+        span.style.fontSize='13px';
+        span.textContent = pad(n,currentRaffle.digits||3);
+        const btn = document.createElement('button');
+        btn.textContent='×';
+        btn.style.marginLeft='8px';
+        btn.style.background='transparent';
+        btn.style.border='0';
+        btn.style.color='#7f1d1d';
+        btn.style.cursor='pointer';
+        btn.onclick = ()=>{ modalState.selected = modalState.selected.filter(x=>x!==n); updateModalUI(); showToast('Folio removido') };
+        span.appendChild(btn);
+        wrap.appendChild(span);
+      });
+      const info = document.getElementById('selected-info');
+      const totalCost = modalState.selected.length * (currentRaffle.price || 0);
+      info.textContent = `${modalState.selected.length} folio(s) • Total: ${totalCost} MXN`;
+    }
+
+    function clearSelected(){ modalState.selected=[]; updateModalUI(); showToast('Selección vaciada') }
+
+    function sendWhatsApp(){
+      if (!currentRaffle) return;
+      const tel = (document.getElementById('buyer-phone')||{}).value || '';
+      const name = (document.getElementById('buyer-name')||{}).value || '';
+      const folios = modalState.selected.map(n=>pad(n,currentRaffle.digits||3)).join(', ');
+      let msg;
+      if (modalState.selected.length===0) msg = `Hola, me interesa el sorteo ${currentRaffle.title}. ¿Hay disponibilidad?`;
+      else msg = `Hola, quiero apartar los folios: ${folios} para ${currentRaffle.title}. Total: ${modalState.selected.length * (currentRaffle.price||0)} MXN. Nombre: ${name}. Tel: ${tel}`;
+      const href = `https://wa.me/528999123686?text=${encodeURIComponent(msg)}`;
+      window.open(href,'_blank');
+      showToast('Abriendo WhatsApp…');
+    }
+
+    function registerDemo(){
+      const phone = (document.getElementById('buyer-phone')||{}).value.replace(/\D/g,'');
+      if (!phone || phone.length<7) return showToast('Ingresa teléfono válido');
+      if (!currentRaffle) return;
+      const folios = modalState.selected.map(n=>pad(n,currentRaffle.digits||3));
+      if (folios.length===0) return showToast('Selecciona al menos 1 folio');
+      try{
+        const raw = localStorage.getItem('sb_purchases')||'[]';
+        const list = JSON.parse(raw);
+        let row = list.find(r=>String(r.phone).replace(/\D/g,'')===phone && r.sorteo===currentRaffle.title);
+        if (!row){ row = { phone, folios:[], sorteo: currentRaffle.title, name: (document.getElementById('buyer-name')||{}).value || undefined }; list.push(row); }
+        folios.forEach(f=>{ if (!row.folios.includes(f)) row.folios.push(f) });
+        localStorage.setItem('sb_purchases', JSON.stringify(list));
+        showToast(`Registrados ${folios.length} folio(s) para ${phone}`);
+      }catch(e){ console.warn(e); showToast('No se pudo guardar (demo)') }
+    }
+
+    /* ================= Folios search (demo) ================= */
+    async function seedDemo(){
+      try{
+        const curr = JSON.parse(localStorage.getItem('sb_purchases')||'[]');
+        const exists = curr.find(x=>String(x.phone).replace(/\D/g,'')==='8112223344');
+        if (!exists){
+          curr.push({ phone:'8112223344', folios:['10001','10002'], sorteo:'PlayStation 5 — Edición Slim' });
+          localStorage.setItem('sb_purchases', JSON.stringify(curr));
+        }
+        showToast('Datos demo cargados. Usa 8112223344 para probar.');
+      }catch(e){ console.warn(e); showToast('No fue posible cargar demo') }
+    }
+
+    function addDemoFolio(){
+      const phone = (document.getElementById('phone-input')||{}).value.replace(/\D/g,'');
+      const fol = (document.getElementById('new-folio')||{}).value.trim();
+      const sorteo = (document.getElementById('new-sorteo')||{}).value;
+      if (!phone || !fol) { showToast('Escribe teléfono y folio'); return; }
+      try{
+        const curr = JSON.parse(localStorage.getItem('sb_purchases')||'[]');
+        let row = curr.find(x=>String(x.phone).replace(/\D/g,'')===phone && x.sorteo===sorteo);
+        if (!row){ row = { phone, folios:[], sorteo }; curr.push(row); }
+        if (!row.folios.includes(fol)) row.folios.push(fol);
+        localStorage.setItem('sb_purchases', JSON.stringify(curr));
+        showToast('Folio guardado (demo) — ahora busca.');
+      }catch(e){ console.warn(e); showToast('No se pudo guardar (demo)') }
+    }
+
+    document.getElementById('folios-form').addEventListener('submit', async (ev)=>{
+      ev.preventDefault();
+      const phone = (document.getElementById('phone-input')||{}).value.replace(/\D/g,'');
+      if (!phone){ showToast('Ingresa un teléfono válido'); return; }
+      showToast('Buscando folios…');
+      const res = await fetchFoliosDemo(phone);
+      renderFoliosResult(res);
+    });
+
+    async function fetchFoliosDemo(phone){
+      const norm = String(phone||'').replace(/\D/g,'');
+      if (!norm) return { ok:false, items:[], message:'Ingresa un teléfono válido' };
+      // demo dataset
+      const demo = [
+        { phone:'8999123686', folios:['01234','22222','29001'], sorteo:'Computadora Gamer' },
+        { phone:'8999999999', folios:['00007'], sorteo:'PlayStation 5 — Edición Slim' }
+      ];
+      try{
+        const extraRaw = localStorage.getItem('sb_purchases');
+        if (extraRaw){ const extra = JSON.parse(extraRaw); if (Array.isArray(extra)) extra.forEach(x=>demo.push(x)); }
+      }catch(e){}
+      const row = demo.find(r=>r.phone.replace(/\D/g,'')===norm);
+      await new Promise(r=>setTimeout(r,280));
+      if (!row) return { ok:true, items:[], message:'No se encontraron compras con ese teléfono' };
+      return { ok:true, items: row.folios.map((f,i)=>({ folio:f, sorteo:row.sorteo, idx:i+1 })), message:'' };
+    }
+
+    function renderFoliosResult(res){
+      const out = document.getElementById('folios-result');
+      out.innerHTML = '';
+      if (!res.ok && res.message){
+        out.innerHTML = `<div style="color:#f97316">${escapeHtml(res.message)}</div>`;
+        return;
+      }
+      if (res.items.length===0){
+        out.innerHTML = `<div class="muted">${escapeHtml(res.message || 'No hay folios para este teléfono.')}</div>`;
+        return;
+      }
+      const box = document.createElement('div');
+      box.style.border='1px solid var(--border)';
+      box.style.borderRadius='12px';
+      box.style.background='var(--panel)';
+      box.style.overflow='hidden';
+      out.appendChild(box);
+      const header = document.createElement('div');
+      header.style.padding='10px';
+      header.style.borderBottom='1px solid rgba(255,255,255,0.03)';
+      header.innerHTML = `<strong>Se encontraron ${res.items.length} folio(s)</strong>`;
+      box.appendChild(header);
+      const list = document.createElement('ul');
+      list.style.listStyle='none';
+      list.style.margin=0;
+      list.style.padding=0;
+      res.items.forEach(it=>{
+        const li = document.createElement('li');
+        li.style.display='flex';
+        li.style.justifyContent='space-between';
+        li.style.padding='10px';
+        li.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+        li.innerHTML = `<div><div style="font-weight:600">Folio #${escapeHtml(it.folio)}</div><div class="muted" style="font-size:13px">${escapeHtml(it.sorteo)}</div></div><a class="btn" href="#" onclick="(e=>{e.preventDefault();showToast('Funcionalidad comprobante en demo');})()">Ver comprobante</a>`;
+        list.appendChild(li);
+      });
+      box.appendChild(list);
+    }
+
+    /* ================= Leagals (modal) ================= */
+    function openPrivacy(){
+      const root = document.getElementById('legal-root');
+      root.innerHTML = `
+      <div class="modal-back" role="dialog" aria-modal="true">
+        <div class="modal-panel">
+          <div class="modal-header"><strong>Aviso de Privacidad</strong><button class="btn" onclick="closeLegal()">Cerrar</button></div>
+          <div class="modal-body legal">
+            <p>En <strong>Sorteos Bélicos</strong> somos responsables del tratamiento de sus datos personales. Los datos recabados se utilizan para gestionar su participación, confirmar folios, comunicar resultados y coordinar entregas.</p>
+            <ul>
+              <li><strong>Finalidades:</strong> administración de sorteos, comunicación y cumplimiento legal.</li>
+              <li><strong>Transferencias:</strong> no transferimos datos sin su consentimiento salvo mandato legal.</li>
+              <li><strong>Conservación:</strong> por el tiempo necesario para las finalidades.</li>
+            </ul>
+            <p class="muted" style="margin-top:8px">Última actualización: octubre de 2025.</p>
+          </div>
+        </div>
+      </div>`;
+    }
+    function openTerms(){
+      const root = document.getElementById('legal-root');
+      root.innerHTML = `
+      <div class="modal-back" role="dialog" aria-modal="true">
+        <div class="modal-panel">
+          <div class="modal-header"><strong>Términos y Condiciones</strong><button class="btn" onclick="closeLegal()">Cerrar</button></div>
+          <div class="modal-body legal">
+            <p>El uso de este sitio y la participación en Sorteos Bélicos implican la aceptación de estos términos. Los sorteos se basan en resultados oficiales de la Lotería Nacional; la mecánica y premios se publican en cada anuncio.</p>
+            <ul>
+              <li><strong>Participación:</strong> requiere folios válidos y registro oportuno.</li>
+              <li><strong>Pago:</strong> los folios se confirman tras acreditarse el pago en los medios indicados.</li>
+              <li><strong>Resultados:</strong> la determinación de ganadores se apega a la mecánica publicada.</li>
+            </ul>
+            <p class="muted" style="margin-top:8px">Última actualización: octubre de 2025.</p>
+          </div>
+        </div>
+      </div>`;
+    }
+    function closeLegal(){ document.getElementById('legal-root').innerHTML = '' }
+
+    /* ================= small helpers ================= */
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])) }
+    function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;') }
+
+    /* ================= init ================= */
+    (function init(){
+      // nothing extra for now
+      // you can auto-seed demo if you want: seedDemo()
+    })();
+  </script>
 </body>
 </html>
