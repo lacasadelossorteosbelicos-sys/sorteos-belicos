@@ -7,6 +7,14 @@
   <meta name="description" content="Sorteos Bélicos — Compra folios, verifica y participa en sorteos basados en Lotería Nacional." />
   <meta name="theme-color" content="#0b1220">
 
+  <!-- CONFIG API -->
+  <script>
+    window.CONFIG = {
+      USE_API: true,
+      API_URL: "https://script.google.com/macros/s/AKfycbyA9fWU757_Pu5R5wlRRjsmEhDLW0Eq2WP5tSWuwrEcgT9Fgh7l7hvcv0Q7p0ceQSRf/exec", // <-- tu URL real
+      API_TOKEN: "belico_2025_token_seguro"
+    };
+  </script>
   <!-- Simple styles (inline para que lo puedas pegar rápido) -->
   <style>
     :root{
@@ -420,7 +428,19 @@
         showToast(`Registrados ${folios.length} folio(s) para ${phone}`);
       }catch(e){ console.warn(e); showToast('No se pudo guardar (demo)') }
     }
-
+// ===== Folios desde API (Sheets) =====
+async function fetchFoliosAPI(phone){
+  try{
+    const url = `${CONFIG.API_URL}?phone=${encodeURIComponent(phone)}&token=${encodeURIComponent(CONFIG.API_TOKEN)}`;
+    const r = await fetch(url, { headers: { 'Accept':'application/json' } });
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    return { ok: true, items: Array.isArray(data.items) ? data.items : [], message: data.message || '' };
+  }catch(e){
+    console.warn(e);
+    return { ok:false, items:[], message:'No se pudo consultar la API' };
+  }
+}
     /* ================= Folios search (demo) ================= */
     async function seedDemo(){
       try{
@@ -448,13 +468,14 @@
         showToast('Folio guardado (demo) — ahora busca.');
       }catch(e){ console.warn(e); showToast('No se pudo guardar (demo)') }
     }
-
     document.getElementById('folios-form').addEventListener('submit', async (ev)=>{
       ev.preventDefault();
       const phone = (document.getElementById('phone-input')||{}).value.replace(/\D/g,'');
       if (!phone){ showToast('Ingresa un teléfono válido'); return; }
       showToast('Buscando folios…');
-      const res = await fetchFoliosDemo(phone);
+      const res = (window.CONFIG && CONFIG.USE_API)
+  ? await fetchFoliosAPI(phone)
+  : await fetchFoliosDemo(phone);
       renderFoliosResult(res);
     });
 
